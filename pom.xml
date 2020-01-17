@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.chris.demo</groupId>
+    <artifactId>db_flayway</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <flyway-core.version>6.1.4</flyway-core.version>
+        <mysql-connector-java.version>5.1.34</mysql-connector-java.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.source>1.8</maven-compiler-plugin.source>
+        <maven-compiler-plugin.target>1.8</maven-compiler-plugin.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway-core.version}</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <db.url>jdbc:mysql://127.0.0.1:3306/mytest?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull</db.url>
+                <db.user>root</db.user>
+                <db.password>123456</db.password>
+                <migration.directory>filesystem:src/main/resources/db_script/mytest</migration.directory>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${maven-compiler-plugin.source}</source>
+                    <target>${maven-compiler-plugin.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway-core.version}</version>
+                <configuration>
+                    <url>${db.url}</url>
+                    <user>${db.user}</user>
+                    <password>${db.password}</password>
+                    <baselineOnMigrate>true</baselineOnMigrate><!-- 库里已经存在表结构的得加这个 -->
+                    <cleanDisabled>true</cleanDisabled><!-- 这个一定得加上  免得删库了 -->
+                    <locations>${migration.directory}</locations><!-- 脚本目录路径 -->
+                </configuration>
+                <dependencies>
+                    <!-- mysql驱动包 -->
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>${mysql-connector-java.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>
